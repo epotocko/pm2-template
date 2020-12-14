@@ -1,0 +1,6 @@
+Template for pm2 project with no-downtime restarts
+To test:
+ run docker container with bin/dev
+ start benchmark: ab -n 10000 -c 2 "http://192.168.2.170:3000/ping"
+ touch tmp/restart.txt in the container
+ no requests should fail

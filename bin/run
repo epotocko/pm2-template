@@ -1,0 +1,27 @@
+#!/bin/sh
+# Entry point for docker in production
+
+echo "----Starting server----"
+
+pm2-runtime start ecosystem.config.js &
+
+# Catch SIGTERM signals which tells us the container is being shut down
+# Tell forever to shutdown and exit the shell script
+trap 'echo "----Shutting Down----"; pm2 stop app; exit 1;' TERM
+
+echo "----Sleeping----"
+
+# Detect when tmp/restart.txt has been changed and restart the server
+TMP_RESTART=/app/tmp/restart.txt
+touch $TMP_RESTART
+last=$( date -r $TMP_RESTART )
+while true
+do
+  now=$( date -r $TMP_RESTART )
+  if [ "$last" != "$now" ]; then
+    last=$now
+    echo "Restarting app"
+    pm2 reload app
+  fi
+  sleep 5
+done

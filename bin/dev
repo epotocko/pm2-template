@@ -1,0 +1,9 @@
+#!/bin/sh
+
+docker build -t pm2-test --target release .
+
+# Start the docker container
+docker run -i -p 3000:3000/tcp \
+  -v $(pwd)/app.js:/app/app.js \
+  -e NODE_ENV=development \
+  -t pm2-test $1
